@@ -1,7 +1,7 @@
 // Author: yangzq80@gmail.com
 // Date: 2021-02-23
 //
-package exec
+package db
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 
 func TestA(t *testing.T) {
 
-	s := NewStorage()
+	s := NewStorage("/tmp/ai-tools")
 	s.Save("frontend", "vue-project-create", "vue工程创建")
 
 	s.Save("ssh", "node1", "ssh root@n1")

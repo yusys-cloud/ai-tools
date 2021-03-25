@@ -4,9 +4,14 @@
 package main
 
 import (
-	"fmt"
+	"github.com/yusys-cloud/ai-tools/conf"
+	"github.com/yusys-cloud/ai-tools/server"
 )
 
 func main() {
-	fmt.Printf("Starting")
+	cf := conf.ReadConfig()
+
+	s := server.NewServer(cf)
+
+	s.Start()
 }

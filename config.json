@@ -1,0 +1,5 @@
+{
+  "Port": "9999",
+  "Path": "/tmp/ai-tools",
+  "Mode": "debug"
+}
