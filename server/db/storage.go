@@ -4,7 +4,6 @@
 package db
 
 import (
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/xujiajun/nutsdb"
 )
@@ -12,6 +11,8 @@ import (
 type Storage struct {
 	db *nutsdb.DB
 }
+
+type DataKV map[string]interface{}
 
 func NewStorage(dir string) *Storage {
 	opt := nutsdb.DefaultOptions
@@ -26,26 +27,48 @@ func NewStorage(dir string) *Storage {
 }
 
 //查询bucket中全部
-func (s *Storage) GetAll(bucket string) {
+func (s *Storage) GetAll(bucket string) []DataKV {
+	//var rs []Bucket
+	var kvs []DataKV
 	if err := s.db.View(
 		func(tx *nutsdb.Tx) error {
-			entries, err := tx.GetAll(bucket)
-			if err != nil {
+			if entries, err := tx.GetAll(bucket); err != nil {
 				return err
+			} else {
+				for _, entry := range entries {
+					//rs = append(rs, Bucket{string(entry.Key), string(entry.Value)})
+					kv := DataKV{}
+					kv[string(entry.Key)] = string(entry.Value)
+					kvs = append(kvs, kv)
+				}
 			}
-
-			for _, entry := range entries {
-				log.Println(string(entry.Key), string(entry.Value))
-			}
-
 			return nil
 		}); err != nil {
 		log.Println(err)
 	}
+	return kvs
+}
+
+//查询单个
+func (s *Storage) GetOne(bucket string, key string) DataKV {
+	kv := DataKV{}
+	if err := s.db.View(
+		func(tx *nutsdb.Tx) error {
+			if e, err := tx.Get(bucket, []byte(key)); err != nil {
+				return err
+			} else {
+				kv[string(e.Key)] = string(e.Value)
+			}
+			return nil
+		}); err != nil {
+		log.Println(err)
+	}
+	return kv
 }
 
 //根据key前缀查询bucket中全部
-func (s *Storage) GetAllByPrfix(bucket string, prefix string) {
+func (s *Storage) GetAllByPrfix(bucket string, prefix string) []DataKV {
+	var kvs []DataKV
 	if err := s.db.View(
 		func(tx *nutsdb.Tx) error {
 
@@ -53,17 +76,20 @@ func (s *Storage) GetAllByPrfix(bucket string, prefix string) {
 				return err
 			} else {
 				for _, entry := range entries {
-					fmt.Println(string(entry.Key), string(entry.Value))
+					kv := DataKV{}
+					kv[string(entry.Key)] = string(entry.Value)
+					kvs = append(kvs, kv)
+					//log.Println(string(entry.Key),string(entry.Value))
 				}
 			}
-
 			return nil
 		}); err != nil {
 		log.Println(err)
 	}
+	return kvs
 }
 
-//保存key,value
+//保存key,value. bucket类似table
 func (s *Storage) Save(bucket string, key string, value string) {
 	if err := s.db.Update(
 		func(tx *nutsdb.Tx) error {

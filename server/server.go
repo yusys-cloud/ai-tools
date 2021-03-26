@@ -29,6 +29,7 @@ func (s *Server) startApiServer() {
 	}
 	engine := gin.Default()
 
-	engine.Run(":" + s.cf.Port)
+	s.ConfigHandles(engine)
 
+	engine.Run(":" + s.cf.Port)
 }

@@ -30,5 +30,10 @@ func ReadConfig() *Conf {
 		log.Fatalf("parse config file <%s> failure. error:%+v", file, err)
 	}
 
+	b, _ := json.MarshalIndent(cnf, "", "   ")
+	//b,_ := json.Marshal(conf)
+
+	log.Println("Config:\n", string(b))
+
 	return cnf
 }
