@@ -4,22 +4,23 @@
 package db
 
 import (
+	"fmt"
+	"github.com/xujiajun/utils/filesystem"
+	"os"
 	"testing"
 )
 
 func TestA(t *testing.T) {
 
-	s := NewStorage("/tmp/ai-tools")
-	s.Save("frontend", "vue-project-create", "vue工程创建")
-
-	s.Save("ssh", "node1", "ssh root@n1")
-	s.Save("ssh", "node2", "ssh root@n1")
-
-	s.GetAll("frontend")
-
-	s.GetAll("ssh")
 }
 
 func TestCmd(t *testing.T) {
 	//ExecCommand("vue init webpack demo")
+	bptRootIdxDir := "aa/b"
+	if ok := filesystem.PathIsExist(bptRootIdxDir); !ok {
+		if err := os.MkdirAll(bptRootIdxDir, os.ModePerm); err != nil {
+			fmt.Println(err)
+			//return nil, err
+		}
+	}
 }

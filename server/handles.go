@@ -5,40 +5,67 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
+	"github.com/yusys-cloud/ai-tools/server/db"
 	"net/http"
 )
 
 func (s *Server) ConfigHandles(r *gin.Engine) {
 	rg := r.Group("/api")
-	rg.GET("/kv/:b", s.getAll)
-	rg.GET("/kv/:b/:k", s.getOne)
-	rg.POST("/kv/:b/:k", s.save)
-	rg.DELETE("/kv/:b/:k", s.delete)
+	rg.POST("/kv/:b/:k", s.create)
+	rg.GET("/kv/:b/:k", s.readAll)
+	rg.GET("/kv/:b/:k/:kid", s.readOne)
+	rg.PUT("/kv/:b/:k/:kid", s.update)
+	rg.DELETE("/kv/:b/:k/:kid", s.delete)
 }
 
-func (s *Server) save(c *gin.Context) {
+func (s *Server) create(c *gin.Context) {
 
-	v := c.DefaultPostForm("v", "{}")
+	var data db.DataKV
 
-	s.db.Save(c.Param("b"), c.Param("k"), v)
+	if err := c.ShouldBindJSON(&data); err != nil {
+		log.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	id := s.db.Create(c.Param("b"), c.Param("k"), data)
+
+	c.JSON(http.StatusOK, gin.H{"success": id})
 }
 
-func (s *Server) getAll(c *gin.Context) {
-	b := s.db.GetAll(c.Param("b"))
+func (s *Server) update(c *gin.Context) {
+	var data db.DataKV
+
+	if err := c.ShouldBindJSON(&data); err != nil {
+		log.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := s.db.Update(c.Param("b"), c.Param("kid"), data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"success": "ok"})
+}
+
+func (s *Server) readAll(c *gin.Context) {
+	b := s.db.ReadAll(c.Param("b"), c.Param("k"))
 	c.JSON(http.StatusOK, b)
 }
 
-func (s *Server) getOne(c *gin.Context) {
+func (s *Server) readOne(c *gin.Context) {
 
-	kv := s.db.GetOne(c.Param("b"), c.Param("k"))
+	kv := s.db.ReadOne(c.Param("b"), c.Param("kid"))
 
 	c.JSON(http.StatusOK, kv)
 }
 
 func (s *Server) delete(c *gin.Context) {
 
-	s.db.Delete(c.Param("b"), c.Param("k"))
+	s.db.Delete(c.Param("b"), c.Param("kid"))
 
-	c.JSON(http.StatusOK, "")
+	c.JSON(http.StatusOK, "ok")
 }

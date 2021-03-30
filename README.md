@@ -13,9 +13,12 @@
 ## Quick Start
 - CRUD
 ``` 
-curl -d 'v={"id":"cpu", "name":"CPU实验2"}' -X POST http://localhost:9999/api/kv/chaos/cpu
-curl http://localhost:9999/api/kv/chaos
-curl http://localhost:9999/api/kv/chaos/cpu
+[GIN-debug] POST   /api/kv/:b/:k             --> github.com/yusys-cloud/ai-tools/server.(*Server).create-fm (3 handlers)
+[GIN-debug] GET    /api/kv/:b/:k             --> github.com/yusys-cloud/ai-tools/server.(*Server).readAll-fm (3 handlers)
+[GIN-debug] GET    /api/kv/:b/:k/:kid        --> github.com/yusys-cloud/ai-tools/server.(*Server).readOne-fm (3 handlers)
+[GIN-debug] PUT    /api/kv/:b/:k/:kid        --> github.com/yusys-cloud/ai-tools/server.(*Server).update-fm (3 handlers)
+[GIN-debug] DELETE /api/kv/:b/:k/:kid        --> github.com/yusys-cloud/ai-tools/server.(*Server).delete-fm (3 handlers)    
+
 ```
 ## Todo
 - Vue 工程创建
