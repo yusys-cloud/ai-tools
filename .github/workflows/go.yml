@@ -6,20 +6,18 @@ on:
   pull_request:
     branches: [ main ]
 
+# workflow tasks
 jobs:
-
-  build:
+  generate:
+    name: Generate cross-platform builds
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.15
-
-    - name: Build
-      run: go build -v ./...
-
-    - name: Test
-      run: go test -v ./...
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+      - name: Generate build files
+        uses: thatisuday/go-cross-build@v1
+        with:
+          platforms: 'linux/amd64, darwin/amd64, windows/amd64'
+          name: 'ai-tools'
+          compress: 'true'
+          dest: 'dist'
