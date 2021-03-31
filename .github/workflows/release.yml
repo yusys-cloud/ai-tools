@@ -1,10 +1,13 @@
-name: Go
+# workflow name
+name: Generate release-artifacts
 
+# on events
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  release:
+    types:
+      - created
+
+# workflow tasks
 
 # jobs
 jobs:
