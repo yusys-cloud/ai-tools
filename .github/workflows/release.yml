@@ -1,11 +1,10 @@
-# workflow name
-name: release
+name: Go
 
-# on events
 on:
-  release:
-    types:
-      - created
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 # jobs
 jobs:
