@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/yusys-cloud/ai-tools/conf"
 	"github.com/yusys-cloud/ai-tools/server/db"
+	"github.com/yusys-cloud/ai-tools/server/web"
 )
 
 type Server struct {
@@ -24,10 +25,15 @@ func (s *Server) Start() {
 }
 
 func (s *Server) startApiServer() {
-	if s.cf.Mode == "release" {
+	if s.cf.Mode == "pro" {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	engine := gin.Default()
+
+	//Needed in order to disable CORS for local development
+	if s.cf.Mode == "dev" {
+		engine.Use(web.DisableCors())
+	}
 
 	s.ConfigHandles(engine)
 

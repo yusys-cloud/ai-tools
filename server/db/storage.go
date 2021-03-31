@@ -20,9 +20,9 @@ type Storage struct {
 	idNode *snowflake.Node
 }
 
-//type DataKV map[string]interface{}
-type DataKV struct {
-	Data interface{} `form:"data" json:"data" xml:"data"  binding:"required"`
+type Data struct {
+	K string      `json:"k"`
+	V interface{} `json:"v"`
 }
 
 func NewStorage(dir string) *Storage {
@@ -35,15 +35,17 @@ func NewStorage(dir string) *Storage {
 }
 
 //查询bucket中 key 全部
-func (s *Storage) ReadAll(bucket string, key string) map[string]json.RawMessage {
+func (s *Storage) ReadAll(bucket string, key string) []Data {
 
 	s.loadPersistent(bucket)
 
-	return s.db.GetAll(regexp.MustCompile(key))
+	rs := s.db.GetAll(regexp.MustCompile(key))
+
+	return convertMapToArray(rs)
 }
 
 //查询单个
-func (s *Storage) ReadOne(bucket string, key string) json.RawMessage {
+func (s *Storage) ReadOne(bucket string, key string) Data {
 
 	s.loadPersistent(bucket)
 
@@ -51,19 +53,18 @@ func (s *Storage) ReadOne(bucket string, key string) json.RawMessage {
 
 	_, rs = s.db.GetRawMessage(key)
 
-	return rs
+	return Data{key, string(rs)}
 }
 
 //保存key,value. bucket类似table
-func (s *Storage) Create(bucket string, key string, kv DataKV) string {
+func (s *Storage) Create(bucket string, key string, value interface{}) string {
 
 	s.loadPersistent(bucket)
 
 	//默认自增ID
-	//id := key + ":" + strconv.Itoa(len(s.db.Keys())+1)
 	id := key + ":" + s.idNode.Generate().String()
 
-	err := s.db.Set(id, kv.Data)
+	err := s.db.Set(id, value)
 	if err != nil {
 		panic(err)
 	}
@@ -74,11 +75,11 @@ func (s *Storage) Create(bucket string, key string, kv DataKV) string {
 }
 
 // 根据key更新
-func (s *Storage) Update(bucket string, key string, kv DataKV) error {
+func (s *Storage) Update(bucket string, key string, value interface{}) error {
 
 	s.loadPersistent(bucket)
 
-	err := s.db.Set(key, kv.Data)
+	err := s.db.Set(key, value)
 	if err != nil {
 		panic(err)
 	}
@@ -124,4 +125,12 @@ func mkdirIfNotExist(rootDir string) error {
 		}
 	}
 	return nil
+}
+
+func convertMapToArray(raw map[string]json.RawMessage) []Data {
+	var datas []Data
+	for k, v := range raw {
+		datas = append(datas, Data{k, v})
+	}
+	return datas
 }

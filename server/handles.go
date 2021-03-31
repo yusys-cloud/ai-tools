@@ -6,7 +6,6 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"github.com/yusys-cloud/ai-tools/server/db"
 	"net/http"
 )
 
@@ -17,12 +16,12 @@ func (s *Server) ConfigHandles(r *gin.Engine) {
 	rg.GET("/kv/:b/:k/:kid", s.readOne)
 	rg.PUT("/kv/:b/:k/:kid", s.update)
 	rg.DELETE("/kv/:b/:k/:kid", s.delete)
+	rg.DELETE("/kv/:b/:k/", s.deleteAll)
 }
 
 func (s *Server) create(c *gin.Context) {
 
-	var data db.DataKV
-
+	var data interface{}
 	if err := c.ShouldBindJSON(&data); err != nil {
 		log.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -31,11 +30,11 @@ func (s *Server) create(c *gin.Context) {
 
 	id := s.db.Create(c.Param("b"), c.Param("k"), data)
 
-	c.JSON(http.StatusOK, gin.H{"success": id})
+	c.JSON(http.StatusOK, id)
 }
 
 func (s *Server) update(c *gin.Context) {
-	var data db.DataKV
+	var data interface{}
 
 	if err := c.ShouldBindJSON(&data); err != nil {
 		log.Error(err)
@@ -48,7 +47,7 @@ func (s *Server) update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"success": "ok"})
+	c.JSON(http.StatusOK, "ok")
 }
 
 func (s *Server) readAll(c *gin.Context) {
@@ -67,5 +66,13 @@ func (s *Server) delete(c *gin.Context) {
 
 	s.db.Delete(c.Param("b"), c.Param("kid"))
 
+	c.JSON(http.StatusOK, "ok")
+}
+func (s *Server) deleteAll(c *gin.Context) {
+	b := c.Param("b")
+	rs := s.db.ReadAll(b, c.Param("k"))
+	for _, value := range rs {
+		s.db.Delete(b, value.K)
+	}
 	c.JSON(http.StatusOK, "ok")
 }
