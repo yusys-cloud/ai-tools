@@ -10,13 +10,13 @@ import (
 )
 
 func (s *Server) ConfigHandles(r *gin.Engine) {
-	rg := r.Group("/api")
-	rg.POST("/kv/:b/:k", s.create)
-	rg.GET("/kv/:b/:k", s.readAll)
-	rg.GET("/kv/:b/:k/:kid", s.readOne)
-	rg.PUT("/kv/:b/:k/:kid", s.update)
-	rg.DELETE("/kv/:b/:k/:kid", s.delete)
-	rg.DELETE("/kv/:b/:k/", s.deleteAll)
+	rg := r.Group("/api/kv/:b/:k")
+	rg.POST("/", s.create)
+	rg.GET("/", s.readAll)
+	rg.GET("/:kid", s.readOne)
+	rg.PUT("/:kid", s.update)
+	rg.DELETE("/:kid", s.delete)
+	rg.DELETE("/", s.deleteAll)
 }
 
 func (s *Server) create(c *gin.Context) {
