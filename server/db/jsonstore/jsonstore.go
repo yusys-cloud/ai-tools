@@ -101,6 +101,17 @@ func (s *JSONStore) Set(key string, value interface{}) error {
 	return nil
 }
 
+// Set saves a value at the given key.
+func (s *JSONStore) SetMarshalValue(key string, marshalValue []byte) error {
+	s.Lock()
+	defer s.Unlock()
+	if s.Data == nil {
+		s.Data = make(map[string]json.RawMessage)
+	}
+	s.Data[key] = json.RawMessage(marshalValue)
+	return nil
+}
+
 // Get will return the value with a key.
 func (s *JSONStore) GetRawMessage(key string) (error, json.RawMessage) {
 	s.RLock()

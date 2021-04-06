@@ -17,6 +17,8 @@ func (s *Server) ConfigHandles(r *gin.Engine) {
 	rg.PUT("/:kid", s.update)
 	rg.DELETE("/:kid", s.delete)
 	rg.DELETE("/", s.deleteAll)
+	//扩展功能开发
+	rg.POST("/run/:kid", s.run)
 }
 
 func (s *Server) create(c *gin.Context) {

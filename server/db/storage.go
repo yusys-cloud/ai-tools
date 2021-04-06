@@ -49,11 +49,21 @@ func (s *Storage) ReadOne(bucket string, key string) Data {
 
 	s.loadPersistent(bucket)
 
-	var rs json.RawMessage
+	_, rs := s.db.GetRawMessage(key)
 
-	_, rs = s.db.GetRawMessage(key)
+	var f interface{}
 
-	return Data{key, string(rs)}
+	json.Unmarshal(rs, &f)
+
+	return Data{key, f}
+}
+func (s *Storage) ReadOneRaw(bucket string, key string) []byte {
+
+	s.loadPersistent(bucket)
+
+	_, rs := s.db.GetRawMessage(key)
+
+	return rs
 }
 
 //保存key,value. bucket类似table
@@ -80,6 +90,19 @@ func (s *Storage) Update(bucket string, key string, value interface{}) error {
 	s.loadPersistent(bucket)
 
 	err := s.db.Set(key, value)
+	if err != nil {
+		panic(err)
+	}
+
+	s.savePersistent(bucket)
+
+	return err
+}
+func (s *Storage) UpdateMarshalValue(bucket string, key string, value []byte) error {
+
+	s.loadPersistent(bucket)
+
+	err := s.db.SetMarshalValue(key, value)
 	if err != nil {
 		panic(err)
 	}

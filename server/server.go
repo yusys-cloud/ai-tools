@@ -4,6 +4,7 @@
 package server
 
 import (
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/yusys-cloud/ai-tools/conf"
 	"github.com/yusys-cloud/ai-tools/server/db"
@@ -34,6 +35,8 @@ func (s *Server) startApiServer() {
 	if s.cf.Mode == "dev" {
 		engine.Use(web.DisableCors())
 	}
+
+	engine.Use(static.Serve("/", static.LocalFile("./ui", false)))
 
 	s.ConfigHandles(engine)
 
