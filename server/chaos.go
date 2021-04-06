@@ -77,19 +77,18 @@ func (s *Server) run(c *gin.Context) {
 			logrus.Println("send...", freq)
 			rs := jsonvalue.NewObject()
 			rs.SetString(freq).At("reqUrl")
-			rs.SetString(getUrl(freq)).At("respBody")
+			//rs.SetString(getUrl(freq)).At("respBody")
 
 			v.Set(rs).At("runResult")
 			//保存执行结果到json
 			logrus.Println(chaos)
-
-			s.db.UpdateMarshalValue(c.Param("b"), c.Param("kid"), chaos.MustMarshal())
 
 			return true
 		})
 
 		return true
 	})
+	s.db.UpdateMarshalValue(c.Param("b"), c.Param("kid"), j.MustMarshal())
 }
 
 func getUrl(url string) string {
