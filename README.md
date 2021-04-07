@@ -20,6 +20,20 @@
 [GIN-debug] DELETE /api/kv/:b/:k/:kid        --> github.com/yusys-cloud/ai-tools/server.(*Server).delete-fm (3 handlers)    
 
 ```
+- http
+``` 
+POST   /api/http/do  
+
+curl --location --request POST 'http://localhost:9999/api/http/do' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "url": "http://localhost:9999/api/kv/chaos/designer",
+    "method": "post",
+    "data": {
+        "a": "1"
+    }
+}'
+```
 ## Todo
 - Vue 工程创建
 - Istio deploy

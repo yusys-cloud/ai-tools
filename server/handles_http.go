@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 type DoClient struct {
@@ -18,6 +19,7 @@ type DoClient struct {
 	Headers string
 	//Data    *json.RawMessage `json:"data,ommitempty"`
 	//Data map[string]interface{}
+	Data interface{}
 }
 
 func (s *Server) doHttp(c *gin.Context) {
@@ -31,19 +33,22 @@ func (s *Server) doHttp(c *gin.Context) {
 
 func getUrl(do DoClient) json.RawMessage {
 	var jsonStr = []byte("")
-	//
-	////if r, err := json.Marshal(do.Data); err == nil {
-	////	jsonStr = r
-	////}
-	//jsonStr = *do.Data
-	//j := jsonvalue.Unmarshal(&do.Data)
-	//fmt.Println(j.String())
+
+	if r, err := json.Marshal(do.Data); err == nil {
+		jsonStr = r
+	}
+
+	if do.Method == "" {
+		do.Method = "GET"
+	} else {
+		do.Method = strings.ToUpper(do.Method)
+	}
 
 	req, err := http.NewRequest(do.Method, do.Url, bytes.NewBuffer(jsonStr))
+
 	req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		panic(err)
 		return []byte("http.get i/o timeout")
