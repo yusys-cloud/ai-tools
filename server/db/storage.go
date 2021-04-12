@@ -15,9 +15,9 @@ import (
 )
 
 type Storage struct {
-	db     *jsonstore.JSONStore
-	dir    string
-	idNode *snowflake.Node
+	buckets map[string]*jsonstore.JSONStore
+	dir     string
+	idNode  *snowflake.Node
 }
 
 type Data struct {
@@ -29,27 +29,39 @@ func NewStorage(dir string) *Storage {
 	log.Println("Init JSON storage...", dir)
 	//create dir
 	mkdirIfNotExist(dir)
+
 	node, _ := snowflake.NewNode(1)
 
-	return &Storage{db: new(jsonstore.JSONStore), dir: dir, idNode: node}
+	return &Storage{buckets: make(map[string]*jsonstore.JSONStore), dir: dir, idNode: node}
+}
+
+func (s *Storage) bucket(bucket string) *jsonstore.JSONStore {
+	// From memory
+	if s.buckets[bucket] != nil {
+		return s.buckets[bucket]
+	}
+	// From local
+	if ss, err := jsonstore.Open(s.getFileName(bucket)); err == nil {
+		s.buckets[bucket] = ss
+		return s.buckets[bucket]
+	}
+	// New json storage
+	s.buckets[bucket] = new(jsonstore.JSONStore)
+	return s.buckets[bucket]
 }
 
 //查询bucket中 key 全部
 func (s *Storage) ReadAll(bucket string, key string) []Data {
 
-	s.loadPersistent(bucket)
-
-	rs := s.db.GetAll(regexp.MustCompile(key))
+	rs := s.bucket(bucket).GetAll(regexp.MustCompile(key))
 
 	return convertMapToArray(rs)
 }
 
 //查询单个
-func (s *Storage) ReadOne(bucket string, key string) Data {
+func (s *Storage) Read(bucket string, key string) Data {
 
-	s.loadPersistent(bucket)
-
-	_, rs := s.db.GetRawMessage(key)
+	_, rs := s.bucket(bucket).GetRawMessage(key)
 
 	var f interface{}
 
@@ -59,9 +71,7 @@ func (s *Storage) ReadOne(bucket string, key string) Data {
 }
 func (s *Storage) ReadOneRaw(bucket string, key string) []byte {
 
-	s.loadPersistent(bucket)
-
-	_, rs := s.db.GetRawMessage(key)
+	_, rs := s.bucket(bucket).GetRawMessage(key)
 
 	return rs
 }
@@ -69,12 +79,10 @@ func (s *Storage) ReadOneRaw(bucket string, key string) []byte {
 //保存key,value. bucket类似table
 func (s *Storage) Create(bucket string, key string, value interface{}) string {
 
-	s.loadPersistent(bucket)
-
 	//默认自增ID
 	id := key + ":" + s.idNode.Generate().String()
 
-	err := s.db.Set(id, value)
+	err := s.bucket(bucket).Set(id, value)
 	if err != nil {
 		panic(err)
 	}
@@ -87,9 +95,7 @@ func (s *Storage) Create(bucket string, key string, value interface{}) string {
 // 根据key更新
 func (s *Storage) Update(bucket string, key string, value interface{}) error {
 
-	s.loadPersistent(bucket)
-
-	err := s.db.Set(key, value)
+	err := s.bucket(bucket).Set(key, value)
 	if err != nil {
 		panic(err)
 	}
@@ -100,9 +106,7 @@ func (s *Storage) Update(bucket string, key string, value interface{}) error {
 }
 func (s *Storage) UpdateMarshalValue(bucket string, key string, value []byte) error {
 
-	s.loadPersistent(bucket)
-
-	err := s.db.SetMarshalValue(key, value)
+	err := s.bucket(bucket).SetMarshalValue(key, value)
 	if err != nil {
 		panic(err)
 	}
@@ -115,22 +119,22 @@ func (s *Storage) UpdateMarshalValue(bucket string, key string, value []byte) er
 // 根据key删除
 func (s *Storage) Delete(bucket string, key string) {
 
-	s.loadPersistent(bucket)
-
-	s.db.Delete(key)
+	s.bucket(bucket).Delete(key)
 
 	s.savePersistent(bucket)
 }
-
-func (s *Storage) loadPersistent(bucket string) {
-	if ss, err := jsonstore.Open(s.getFileName(bucket)); err == nil {
-		s.db = ss
+func (s *Storage) DeleteAll(bucket string, key string) int {
+	rs := s.ReadAll(bucket, key)
+	for _, value := range rs {
+		s.bucket(bucket).Delete(value.K)
 	}
+	s.savePersistent(bucket)
+	return len(rs)
 }
 
 func (s *Storage) savePersistent(bucket string) {
 	// Saving will automatically gzip if .gz is provided
-	if err := jsonstore.Save(s.db, s.getFileName(bucket)); err != nil {
+	if err := jsonstore.Save(s.bucket(bucket), s.getFileName(bucket)); err != nil {
 		log.Error(err)
 		panic(err)
 	}

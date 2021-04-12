@@ -7,16 +7,17 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 )
 
 func (s *Server) ConfigHandles(r *gin.Engine) {
-	rg := r.Group("/api/kv/:b/:k")
-	rg.POST("/", s.create)
-	rg.GET("/", s.readAll)
-	rg.GET("/:kid", s.readOne)
-	rg.PUT("/:kid", s.update)
-	rg.DELETE("/:kid", s.delete)
-	rg.DELETE("/", s.deleteAll)
+	rg := r.Group("/api/kv")
+	rg.POST("/:b/:k", s.create)
+	rg.GET("/:b/:k", s.readAll)
+	rg.GET("/:b/:k/:kid", s.read)
+	rg.PUT("/:b/:k/:kid", s.update)
+	rg.DELETE("/:b/:k/:kid", s.delete)
+	rg.DELETE("/:b/:k", s.deleteAll)
 	//http
 	hg := r.Group("/api/http")
 	hg.POST("/do", s.doHttp)
@@ -58,9 +59,9 @@ func (s *Server) readAll(c *gin.Context) {
 	c.JSON(http.StatusOK, b)
 }
 
-func (s *Server) readOne(c *gin.Context) {
+func (s *Server) read(c *gin.Context) {
 
-	kv := s.db.ReadOne(c.Param("b"), c.Param("kid"))
+	kv := s.db.Read(c.Param("b"), c.Param("kid"))
 
 	c.JSON(http.StatusOK, kv)
 }
@@ -72,10 +73,8 @@ func (s *Server) delete(c *gin.Context) {
 	c.JSON(http.StatusOK, "ok")
 }
 func (s *Server) deleteAll(c *gin.Context) {
-	b := c.Param("b")
-	rs := s.db.ReadAll(b, c.Param("k"))
-	for _, value := range rs {
-		s.db.Delete(b, value.K)
-	}
-	c.JSON(http.StatusOK, "ok")
+
+	i := s.db.DeleteAll(c.Param("b"), c.Param("k"))
+
+	c.JSON(http.StatusOK, "Delete nums:"+strconv.Itoa(i))
 }

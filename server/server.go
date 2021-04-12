@@ -34,6 +34,9 @@ func (s *Server) startApiServer() {
 	//Needed in order to disable CORS for local development
 	if s.cf.Mode == "dev" {
 		engine.Use(web.DisableCors())
+		//config := cors.DefaultConfig()
+		//config.AllowAllOrigins = true
+		//engine.Use(cors.New(config))
 	}
 
 	engine.Use(static.Serve("/", static.LocalFile("./ui", false)))
