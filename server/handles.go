@@ -6,6 +6,8 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"github.com/yusys-cloud/ai-tools/server/db"
+	"github.com/yusys-cloud/ai-tools/ssh"
 	"net/http"
 	"strconv"
 )
@@ -18,9 +20,14 @@ func (s *Server) ConfigHandles(r *gin.Engine) {
 	rg.PUT("/:b/:k/:kid", s.update)
 	rg.DELETE("/:b/:k/:kid", s.delete)
 	rg.DELETE("/:b/:k", s.deleteAll)
+	//Search
+	r.GET("/api/search", s.search)
+	//rg.GET("/:b/:k/search/:sNode/:sKey/:sValue/", s.search)
 	//http
 	hg := r.Group("/api/http")
 	hg.POST("/do", s.doHttp)
+	//Websocket
+	r.GET("/api/ws", ssh.WsSsh)
 }
 
 func (s *Server) create(c *gin.Context) {
@@ -55,8 +62,14 @@ func (s *Server) update(c *gin.Context) {
 }
 
 func (s *Server) readAll(c *gin.Context) {
-	b := s.db.ReadAll(c.Param("b"), c.Param("k"))
+	b := s.db.ReadAllSort(c.Param("b"), c.Param("k"))
 	c.JSON(http.StatusOK, b)
+}
+
+func (s *Server) search(c *gin.Context) {
+	var search db.Search
+	c.ShouldBind(&search)
+	c.JSON(http.StatusOK, s.db.Search(search))
 }
 
 func (s *Server) read(c *gin.Context) {

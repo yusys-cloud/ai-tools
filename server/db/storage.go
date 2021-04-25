@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/bwmarrin/snowflake"
 	log "github.com/sirupsen/logrus"
+	"github.com/thedevsaddam/gojsonq/v2"
 	"github.com/xujiajun/utils/filesystem"
 	"github.com/yusys-cloud/ai-tools/server/db/jsonstore"
 	"os"
@@ -23,6 +24,14 @@ type Storage struct {
 type Data struct {
 	K string      `json:"k"`
 	V interface{} `json:"v"`
+}
+type Search struct {
+	B       string `form:"b"`
+	K       string `form:"k"`
+	Node    string `form:"node"`
+	Key     string `form:"key"`
+	Value   string `form:"value"`
+	ShortBy string `form:"shortBy"`
 }
 
 func NewStorage(dir string) *Storage {
@@ -56,6 +65,34 @@ func (s *Storage) ReadAll(bucket string, key string) []Data {
 	rs := s.bucket(bucket).GetAll(regexp.MustCompile(key))
 
 	return convertMapToArray(rs)
+}
+func (s *Storage) ReadAllSort(bucket string, key string) interface{} {
+
+	rs := s.bucket(bucket).GetAll(regexp.MustCompile(key))
+	b, _ := json.Marshal(convertMapToArray(rs))
+
+	jq := gojsonq.New().FromString(string(b))
+	jq.SortBy("k", "desc")
+	return jq.Get()
+}
+
+//
+func (s *Storage) Search(search Search) interface{} {
+	all := s.ReadAll(search.B, search.K)
+	b, _ := json.Marshal(all)
+
+	jq := gojsonq.New().FromString(string(b))
+	if search.Node != "" {
+		jq.From(search.Node)
+	}
+	jq.WhereContains(search.Key, search.Value)
+
+	if search.ShortBy != "" {
+		jq.SortBy(search.ShortBy)
+	} else {
+		jq.SortBy("k", "desc")
+	}
+	return jq.Get()
 }
 
 //查询单个
@@ -155,7 +192,7 @@ func mkdirIfNotExist(rootDir string) error {
 }
 
 func convertMapToArray(raw map[string]json.RawMessage) []Data {
-	var datas []Data
+	datas := make([]Data, 0)
 	for k, v := range raw {
 		datas = append(datas, Data{k, v})
 	}

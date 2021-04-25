@@ -2,6 +2,8 @@
 可视化操作日常工作场景，自动执行重复代码流程
 [ui](https://github.com/yusys-cloud/ai-tools-ui)
 ## Features
+* 低代码SSH工具
+    * 可视化自动输入Linux命令
 * 自动记录重复工作步骤
 * 根据使用频率推荐自动化执行
 * 可视化拖拽配置策略
@@ -9,31 +11,9 @@
     * 主机列表
     * chaos故障 (故障名称 [限制参数列表])
     * 主机故障策略配置矩阵 (nodes 网络延迟[10秒 port8080])
-
+* [REST-APIs](./docs/rest-api.md)
 ## Quick Start
-- CRUD
-``` 
-[GIN-debug] POST   /api/kv/:b/:k             --> github.com/yusys-cloud/ai-tools/server.(*Server).create-fm (3 handlers)
-[GIN-debug] GET    /api/kv/:b/:k             --> github.com/yusys-cloud/ai-tools/server.(*Server).readAll-fm (3 handlers)
-[GIN-debug] GET    /api/kv/:b/:k/:kid        --> github.com/yusys-cloud/ai-tools/server.(*Server).readOne-fm (3 handlers)
-[GIN-debug] PUT    /api/kv/:b/:k/:kid        --> github.com/yusys-cloud/ai-tools/server.(*Server).update-fm (3 handlers)
-[GIN-debug] DELETE /api/kv/:b/:k/:kid        --> github.com/yusys-cloud/ai-tools/server.(*Server).delete-fm (3 handlers)    
 
-```
-- http
-``` 
-POST   /api/http/do  
-
-curl --location --request POST 'http://localhost:9999/api/http/do' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "url": "http://localhost:9999/api/kv/chaos/designer",
-    "method": "post",
-    "data": {
-        "a": "1"
-    }
-}'
-```
 ## Todo
 - Vue 工程创建
 - Istio deploy
@@ -41,7 +21,6 @@ curl --location --request POST 'http://localhost:9999/api/http/do' \
 - Elastisearch集群计算公式:大小，节点，索引由多少分片
 - 技术栈清单 lang type name
 - 表单设计器,json表单保存，运行
-- 数据记录到ai-tools.dat
 
 ## Technologies
 - gin
