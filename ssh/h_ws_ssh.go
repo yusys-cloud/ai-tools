@@ -1,14 +1,14 @@
 // Author: yangzq80@gmail.com
-// Date: 2021-04-19
+// Date: 2021-05-07
 //
 package ssh
 
 import (
+	"bytes"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/sirupsen/logrus"
 	"net/http"
-	"time"
 )
 
 type sshHost struct {
@@ -18,6 +18,8 @@ type sshHost struct {
 	PwdType  string `form:"pwdType"`
 	Password string `form:"password"`
 	KeyFile  string `form:"keyFile"`
+	Cols     int    `form:"cols"`
+	Rows     int    `form:"rows"`
 }
 
 var upGrader = websocket.Upgrader{
@@ -32,20 +34,16 @@ var upGrader = websocket.Upgrader{
 // browser(data) -> webSocket -> ssh connection -> ssh server
 // ssh server(data) -> ssh connection -> webSocket -> browser
 func WsSsh(c *gin.Context) {
-	host := new(sshHost)
-	c.ShouldBind(&host)
-
 	wsConn, err := upGrader.Upgrade(c.Writer, c.Request, nil)
 	if handleError(c, err) {
 		return
 	}
 	defer wsConn.Close()
-	if handleWsError(wsConn, err) {
-		return
-	}
 
 	var client *Client
 
+	host := new(sshHost)
+	c.ShouldBind(&host)
 	if host.Port == "" {
 		host.Port = "22"
 	}
@@ -58,33 +56,23 @@ func WsSsh(c *gin.Context) {
 
 	defer client.Close()
 
-	if handleError(c, err) {
+	//startTime := time.Now()
+	ssConn, err := NewSshConn(host.Cols, host.Rows, client.client)
+
+	if wshandleError(wsConn, err) {
 		return
 	}
+	defer ssConn.Close()
 
-	session, _ := NewSshWsSession(client, wsConn)
-	defer session.Close()
+	quitChan := make(chan bool, 3)
 
-	session.Start()
-}
+	var logBuff = new(bytes.Buffer)
 
-func handleError(c *gin.Context, err error) bool {
-	if err != nil {
-		logrus.WithError(err).Error("gin context http handler error")
-		c.AbortWithStatusJSON(200, gin.H{"ok": false, "msg": err.Error()})
-		return true
-	}
-	return false
-}
+	// most messages are ssh output, not webSocket input
+	go ssConn.ReceiveWsMsg(wsConn, logBuff, quitChan)
+	go ssConn.SendComboOutput(wsConn, quitChan)
+	go ssConn.SessionWait(quitChan)
 
-func handleWsError(ws *websocket.Conn, err error) bool {
-	if err != nil {
-		logrus.WithError(err).Error("handler ws ERROR:")
-		dt := time.Now().Add(time.Second)
-		if err := ws.WriteControl(websocket.CloseMessage, []byte(err.Error()), dt); err != nil {
-			logrus.WithError(err).Error("websocket writes control message failed:")
-		}
-		return true
-	}
-	return false
+	<-quitChan
+	logrus.Info("websocket finished")
 }

@@ -7,18 +7,17 @@ import (
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/yusys-cloud/ai-tools/conf"
-	"github.com/yusys-cloud/ai-tools/server/db"
 	"github.com/yusys-cloud/ai-tools/server/web"
+	"github.com/yusys-cloud/go-jsonstore-rest/rest"
 )
 
 type Server struct {
-	db *db.Storage
 	cf *conf.Conf
 }
 
 func NewServer(cf *conf.Conf) *Server {
 
-	return &Server{db.NewStorage(cf.Path), cf}
+	return &Server{cf}
 }
 
 func (s *Server) Start() {
@@ -42,6 +41,10 @@ func (s *Server) startApiServer() {
 	engine.Use(static.Serve("/", static.LocalFile("./ui", false)))
 
 	s.ConfigHandles(engine)
+
+	rest.NewJsonStoreRest(s.cf.Path, engine)
+
+	ConfigUserHandles(engine)
 
 	engine.Run(":" + s.cf.Port)
 }
