@@ -1,0 +1,8 @@
+version: '3'
+services:
+  ai-tools:
+    image: ai-tools
+    volumes:
+      - /Users/zqy/codes/yusys/yusys-cloud/ai-tools/ai-tools-db:/ai-tools-db
+    ports: 
+      - 9001:9999

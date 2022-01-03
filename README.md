@@ -2,6 +2,7 @@
 可视化操作日常工作场景，自动执行重复代码流程
 [ui](https://github.com/yusys-cloud/ai-tools-ui)
 ## Features
+* policy-as-code
 * 低代码SSH工具
     * 可视化自动输入Linux命令
 * 自动记录重复工作步骤
@@ -35,3 +36,4 @@
 - [日志](github.com/sirupsen/logrus)
 - [Generate a modern Web project](https://github.com/Shpota/goxygen)
 - [drag-and-drop component](https://github.com/SortableJS/Vue.Draggable)
+- [form generator and parser](https://github.com/JakHuang/form-generator)
