@@ -1,0 +1,23 @@
+{
+  "rootDir": "/Users/zqy/Downloads/tl/test",
+  "searchFile": {
+    "suffix": [".java"],
+    "exclude": ["/src/test/java"],
+    "content": {
+      "include": ["@RestController","@RequestMapping"],
+      "exclude": ["@RestControllerEndpoint"]
+    },
+    "output": {
+      "type": "console",
+      "fileEnable": true,
+      "contentEnable": true,
+      "contentShow": {
+        "all": false,
+        "adjacentLines": 2
+      }
+    }
+  },
+  "report": {
+    "type": "console"
+  }
+}

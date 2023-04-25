@@ -2,16 +2,14 @@
 可视化操作日常工作场景，自动执行重复代码流程
 [ui](https://github.com/yusys-cloud/ai-tools-ui)
 ## Features
-* policy-as-code
 * 低代码SSH工具
     * 可视化自动输入Linux命令
-* 自动记录重复工作步骤
+    * 可视化拖拽流程策略
+* 自动记录执行重复工作步骤
 * 根据使用频率推荐自动化执行
-* 可视化拖拽配置策略
-* 故障模拟策略管理
-    * 主机列表
-    * chaos故障 (故障名称 [限制参数列表])
-    * 主机故障策略配置矩阵 (nodes 网络延迟[10秒 port8080])
+* [对指定文件夹进行文本内容搜索](./file/search)
+  * 显示搜索内容上下相关行
+  * 对搜索内容进行替换
 * [REST-APIs](./docs/rest-api.md)
 ## Quick Start
 

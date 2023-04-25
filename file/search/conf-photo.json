@@ -1,0 +1,23 @@
+{
+  "rootDir": "/Users/zqy/codes/mycode/vue/photo-labels",
+  "searchFile": {
+    "suffix": [".vue"],
+    "exclude": ["uni_modules"],
+    "content": {
+      "include": ["static.food028.com"],
+      "replace": "res.yangzhiqiang.tech"
+    },
+    "output": {
+      "type": "console",
+      "fileEnable": true,
+      "contentEnable": true,
+      "contentShow": {
+        "all": false,
+        "adjacentLines": 2
+      }
+    }
+  },
+  "report": {
+    "type": "console"
+  }
+}
