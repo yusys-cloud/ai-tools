@@ -11,9 +11,9 @@ import (
 	"time"
 )
 
-func MakeBackup(sourceDir string) {
+func BackupFolder(sourceDir string) {
 	i := 0
-	backupDir := fmt.Sprintf("%s-back-%s", sourceDir, time.Now().Format("2006-01-02-15-04-05"))
+	backupDir := fmt.Sprintf("%s-backup-%s", sourceDir, time.Now().Format("2006-01-02-150405"))
 
 	err := filepath.Walk(sourceDir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {

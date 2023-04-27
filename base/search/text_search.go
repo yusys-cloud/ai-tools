@@ -5,30 +5,29 @@ package search
 import (
 	"bufio"
 	"fmt"
-	"github.com/yusys-cloud/ai-tools/file/io"
+	"github.com/yusys-cloud/ai-tools/base/io"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 )
 
-type Search struct {
-	Conf *Conf
-}
-
+// 扩展自定义规则判断文件是否满足搜索条件，false则不满足，默认true
 type PathFunc func(path string) bool
 type HandleMatchedFunc func(path string, content []byte)
 
-func (sf *SearchFile) WalkContent(rootDir string) error {
+func (sf *SearchRule) WalkContent(rootDir string) error {
 	if sf.Content.Replace != "" {
-		io.MakeBackup(rootDir)
+		io.BackupFolder(rootDir)
 	}
 	return sf.WalkContentWithFunc(rootDir, nil, nil)
 }
 
-func (tf *SearchFile) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFunc HandleMatchedFunc) error {
+func (sr *SearchRule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFunc HandleMatchedFunc) error {
 	cAll := 0
 	ct := 0
+	start := time.Now()
 	//tf := s.Conf.SearchFile
 	err := filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
 		cAll++
@@ -44,13 +43,13 @@ func (tf *SearchFile) WalkContentWithFunc(rootDir string, pathFunc PathFunc, mat
 			return nil
 		}
 		// 排除含有指定路径的文件
-		if ContainsStr(path, tf.Exclude) {
+		if ContainsStr(path, sr.Exclude) {
 			return nil
 		}
 		// 帅选指定类型后缀的文件
-		if len(tf.Suffix) > 0 {
+		if len(sr.Suffix) > 0 {
 			ext := filepath.Ext(path)
-			if !ContainsStr(ext, tf.Suffix) {
+			if !ContainsStr(ext, sr.Suffix) {
 				return nil
 			}
 		}
@@ -62,33 +61,33 @@ func (tf *SearchFile) WalkContentWithFunc(rootDir string, pathFunc PathFunc, mat
 		content := string(data)
 
 		// 不包含排除字符串
-		if ContainsStr(content, tf.Content.Exclude) {
+		if ContainsStr(content, sr.Content.Exclude) {
 			return nil
 		}
 		// 包含指定字符串
-		if ContainsStr(content, tf.Content.Include) {
+		if ContainsStr(content, sr.Content.Include) {
 			ct++
 			//print-file-path
-			if tf.Output.FileEnable {
+			if sr.Output.FileEnable {
 				fmt.Printf("------TargetFile[%v]------%v \n", ct, strings.ReplaceAll(path, rootDir, "")) // 显示文件名
 			}
 			if matchedFunc != nil {
 				matchedFunc(path, data)
 			}
 			//print-content
-			if tf.Output.ContentEnable {
-				if tf.Output.ContentShow.All {
+			if sr.Output.ContentEnable {
+				if sr.Output.ContentShow.All {
 					fmt.Println(content)
 				} else {
-					showAdjacent(path, tf.Output.ContentShow.AdjacentLines, tf.Content.Include)
+					showAdjacent(path, sr.Output.ContentShow.AdjacentLines, sr.Content.Include)
 				}
 			}
 			// replace
-			if tf.Content.Replace != "" {
+			if sr.Content.Replace != "" {
 				modifiedContent := ""
 				// replace all occurrences of "abc" with "aabbcc"
-				for _, s := range tf.Content.Include {
-					modifiedContent = strings.ReplaceAll(content, s, tf.Content.Replace)
+				for _, s := range sr.Content.Include {
+					modifiedContent = strings.ReplaceAll(content, s, sr.Content.Replace)
 				}
 
 				// write the modified string back to the file
@@ -104,7 +103,7 @@ func (tf *SearchFile) WalkContentWithFunc(rootDir string, pathFunc PathFunc, mat
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Printf("------TotalFile:%v targetFile:%v------ \n", cAll, ct)
+	fmt.Printf("Search totalFile:%v targetFile:%v cost:%v \n", cAll, ct, time.Now().Sub(start))
 	return nil
 }
 

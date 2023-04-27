@@ -4,13 +4,13 @@ package main
 
 import (
 	"flag"
-	"github.com/yusys-cloud/ai-tools/file/search"
+	"github.com/yusys-cloud/ai-tools/base/search"
 )
 
 func main() {
 	path := flag.String("path", "conf.json", "--path=conf.json")
 	flag.Parse()
 
-	cnf := search.NewFileConf(*path)
-	cnf.SearchFile.WalkContent(cnf.RootDir)
+	cnf := search.NewSearch(*path)
+	cnf.SearchRule.WalkContent(cnf.RootDir)
 }

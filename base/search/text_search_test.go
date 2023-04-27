@@ -7,6 +7,6 @@ import (
 )
 
 func TestShowStruct(t *testing.T) {
-	as := &Search{NewFileConf("conf-photo.json")}
-	as.Conf.SearchFile.WalkContent(as.Conf.RootDir)
+	search := NewSearch("conf.json")
+	search.SearchRule.WalkContent(search.RootDir)
 }

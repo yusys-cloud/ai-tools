@@ -1,6 +1,6 @@
 {
   "rootDir": "/Users/zqy/Downloads/tl/test",
-  "searchFile": {
+  "searchRule": {
     "suffix": [".java"],
     "exclude": ["/src/test/java"],
     "content": {
@@ -8,7 +8,6 @@
       "exclude": ["@RestControllerEndpoint"]
     },
     "output": {
-      "type": "console",
       "fileEnable": true,
       "contentEnable": true,
       "contentShow": {

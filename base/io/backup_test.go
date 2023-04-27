@@ -7,5 +7,5 @@ import (
 )
 
 func TestBackup(t *testing.T) {
-	MakeBackup("/Users/zqy/test/tmp")
+	BackupFolder("/Users/zqy/test/tmp/test-folder")
 }

@@ -2,13 +2,13 @@
 // Date: 2023/3/9
 package search
 
-import "github.com/yusys-cloud/ai-tools/file/conf"
+import "github.com/yusys-cloud/ai-tools/base/conf"
 
-type Conf struct {
+type Search struct {
 	RootDir    string
-	SearchFile *SearchFile
+	SearchRule *SearchRule
 }
-type SearchFile struct {
+type SearchRule struct {
 	Suffix []string
 	//排除含有指定路径的文件
 	Exclude []string
@@ -18,8 +18,7 @@ type SearchFile struct {
 type Content struct {
 	Include []string
 	Exclude []string //支持正则
-	//Regexp  []string
-	Replace string //替换为新的字符串
+	Replace string   //替换为新的字符串
 }
 type Output struct {
 	FileEnable    bool
@@ -31,8 +30,8 @@ type ContentShow struct {
 	AdjacentLines int
 }
 
-func NewFileConf(name string) *Conf {
-	cnf := &Conf{}
-	conf.LoadJsonConfigFile(name, cnf)
+func NewSearch(configFileName string) *Search {
+	cnf := &Search{}
+	conf.LoadJsonConfigFile(configFileName, cnf)
 	return cnf
 }
