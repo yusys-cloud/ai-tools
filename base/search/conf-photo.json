@@ -1,6 +1,6 @@
 {
   "rootDir": "/Users/zqy/codes/mycode/vue/photo-labels",
-  "searchRule": {
+  "rule": {
     "suffix": [".vue"],
     "exclude": ["uni_modules"],
     "content": {

@@ -5,15 +5,20 @@ package search
 import "github.com/yusys-cloud/ai-tools/base/conf"
 
 type Search struct {
-	RootDir    string
-	SearchRule *SearchRule
+	RootDir string
+	Rule    *Rule
 }
-type SearchRule struct {
+type Rule struct {
 	Suffix []string
 	//排除含有指定路径的文件
-	Exclude []string
-	Content *Content
-	Output  *Output
+	Exclude               []string
+	Content               *Content
+	Output                *Output
+	ContentExtMatchedFunc []*ContentExtMatchedFunc
+}
+type ContentExtMatchedFunc struct {
+	FuncName string
+	Include  []string
 }
 type Content struct {
 	Include []string

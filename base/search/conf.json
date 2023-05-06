@@ -1,6 +1,6 @@
 {
   "rootDir": "/Users/zqy/Downloads/tl/test",
-  "searchRule": {
+  "rule": {
     "suffix": [".java"],
     "exclude": ["/src/test/java"],
     "content": {

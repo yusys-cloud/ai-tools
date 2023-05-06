@@ -8,5 +8,5 @@ import (
 
 func TestShowStruct(t *testing.T) {
 	search := NewSearch("conf.json")
-	search.SearchRule.WalkContent(search.RootDir)
+	search.Rule.WalkContent(search.RootDir)
 }

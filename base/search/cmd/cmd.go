@@ -12,5 +12,5 @@ func main() {
 	flag.Parse()
 
 	cnf := search.NewSearch(*path)
-	cnf.SearchRule.WalkContent(cnf.RootDir)
+	cnf.Rule.WalkContent(cnf.RootDir)
 }
