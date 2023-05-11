@@ -5,14 +5,14 @@
     "exclude": ["uni_modules"],
     "content": {
       "include": ["static."],
-      "replace":""
-    },
-    "output": {
-      "fileEnable": true,
-      "contentEnable": true,
-      "contentShow": {
-        "all": false,
-        "adjacentLines": 2
+      "replace":"",
+      "output": {
+        "fileEnable": true,
+        "contentEnable": true,
+        "contentShow": {
+          "all": false,
+          "adjacentLines": 2
+        }
       }
     }
   },

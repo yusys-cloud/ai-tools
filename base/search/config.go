@@ -13,7 +13,6 @@ type Rule struct {
 	//排除含有指定路径的文件
 	Exclude               []string
 	Content               *Content
-	Output                *Output
 	ContentExtMatchedFunc []*ContentExtMatchedFunc
 }
 type ContentExtMatchedFunc struct {
@@ -24,6 +23,7 @@ type Content struct {
 	Include []string
 	Exclude []string //支持正则
 	Replace string   //替换为新的字符串
+	Output  *Output
 }
 type Output struct {
 	FileEnable    bool

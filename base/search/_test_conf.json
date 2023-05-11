@@ -5,14 +5,14 @@
     "exclude": ["/src/test/java"],
     "content": {
       "include": ["@RestController","@RequestMapping"],
-      "exclude": ["@RestControllerEndpoint"]
-    },
-    "output": {
-      "fileEnable": true,
-      "contentEnable": true,
-      "contentShow": {
-        "all": false,
-        "adjacentLines": 2
+      "exclude": ["@RestControllerEndpoint"],
+      "output": {
+        "fileEnable": true,
+        "contentEnable": true,
+        "contentShow": {
+          "all": false,
+          "adjacentLines": 2
+        }
       }
     }
   },

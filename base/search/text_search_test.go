@@ -7,6 +7,6 @@ import (
 )
 
 func TestShowStruct(t *testing.T) {
-	search := NewSearch("conf.json")
+	search := NewSearch("_test_conf.json")
 	search.Rule.WalkContent(search.RootDir)
 }
