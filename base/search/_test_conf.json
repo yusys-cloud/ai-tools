@@ -14,7 +14,16 @@
           "adjacentLines": 2
         }
       }
-    }
+    },
+    "ContentExtFunc": [
+      {
+        "funcName": "a",
+        "include": [
+          "@FeignClient\\(.*name\\s*=\\s*\"([^\"]*)\".*\\)",
+          "@FeignClient\\(\"(.*?)\"\\)"
+        ]
+      }
+    ]
   },
   "report": {
     "type": "console"

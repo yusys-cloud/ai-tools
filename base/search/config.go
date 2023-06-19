@@ -11,8 +11,11 @@ type Search struct {
 type Rule struct {
 	Suffix []string
 	//排除含有指定路径的文件
-	Exclude               []string
-	Content               *Content
+	Exclude []string
+	Content *Content
+	// 自定义对全部内容处理
+	ContentExtFunc []*ContentExtMatchedFunc
+	// 自定义对匹配到的内容处理
 	ContentExtMatchedFunc []*ContentExtMatchedFunc
 }
 type ContentExtMatchedFunc struct {

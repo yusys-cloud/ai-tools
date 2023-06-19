@@ -9,13 +9,13 @@ import (
 	"strings"
 )
 
-func defaultContentHandle(sr *Rule, matchedFunc HandleMatchedFunc, path string, data []byte, content string, err error, info os.FileInfo, ct int, rootDir string) {
+func defaultContentHandle(sr *Rule, matchedFunc HandleMatchedFunc, path string, content string, err error, info os.FileInfo, ct int, rootDir string) {
 	//print-file-path
 	if sr.Content.Output.FileEnable {
 		fmt.Printf("------TargetFile[%v]------%v \n", ct, strings.ReplaceAll(path, rootDir, "")) // 显示文件名
 	}
 	if matchedFunc != nil {
-		matchedFunc(path, data)
+		matchedFunc(path, content)
 	}
 	//print-content
 	if sr.Content.Output.ContentEnable {

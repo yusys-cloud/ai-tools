@@ -3,10 +3,18 @@
 package search
 
 import (
+	"fmt"
 	"testing"
 )
 
+var search = NewSearch("_test_conf.json")
+
 func TestShowStruct(t *testing.T) {
-	search := NewSearch("_test_conf.json")
 	search.Rule.WalkContent(search.RootDir)
+}
+
+func TestExtContentFunc(t *testing.T) {
+	search.Rule.WalkContentWithFunc(search.RootDir, nil, nil, func(f ContentExtMatchedFunc, path string, content string) {
+		fmt.Println(f.FuncName, f.Include)
+	}, nil)
 }
