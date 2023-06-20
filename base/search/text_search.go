@@ -31,7 +31,7 @@ func (sr *Rule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFu
 	ct := 0
 	start := time.Now()
 	// 有字符串替换操作则先备份原目录 rootDir
-	if sr.Content.Replace != "" {
+	if sr.Content != nil && sr.Content.Replace != "" {
 		io.BackupFolder(rootDir)
 	}
 	//tf := s.Conf.SearchFile
