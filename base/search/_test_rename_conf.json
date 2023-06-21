@@ -1,0 +1,20 @@
+{
+  "rootDir": "/Users/zqy/test/tmp/rename",
+  "rule": {
+    "dir": {
+      "rename": [{"source": "cc","target": "c"}]
+    },
+    "content": {
+      "include": ["asd"],
+      "replace":"asd-replaced",
+      "output": {
+        "fileEnable": true,
+        "contentEnable": true,
+        "contentShow": {
+          "all": false,
+          "adjacentLines": 2
+        }
+      }
+    }
+  }
+}

@@ -12,6 +12,7 @@ type Rule struct {
 	Suffix []string
 	//排除含有指定路径的文件
 	Exclude []string
+	Dir     *Dir
 	Content *Content
 	// 自定义对全部内容处理
 	ContentExtFunc []*ContentExtMatchedFunc
@@ -42,4 +43,12 @@ func NewSearch(configFileName string) *Search {
 	cnf := &Search{}
 	conf.LoadJsonConfigFile(configFileName, cnf)
 	return cnf
+}
+
+type Dir struct {
+	Rename []*Rename
+}
+type Rename struct {
+	Source string
+	Target string
 }

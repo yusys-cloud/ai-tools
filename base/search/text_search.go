@@ -22,6 +22,9 @@ type ExtContentFunc func(contentExtFunc ContentExtMatchedFunc, path string, cont
 // 扩展自定义func对匹配到的内容进行处理
 type ExtContentMatchedFunc func(contentExtMatchedFunc ContentExtMatchedFunc, path string, content string)
 
+func (s *Search) Start() {
+	s.Rule.WalkContent(s.RootDir)
+}
 func (sf *Rule) WalkContent(rootDir string) error {
 	return sf.WalkContentWithFunc(rootDir, nil, nil, nil, nil)
 }
@@ -29,6 +32,7 @@ func (sf *Rule) WalkContent(rootDir string) error {
 func (sr *Rule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFunc HandleMatchedFunc, extContentFunc ExtContentFunc, extContentMatchedFunc ExtContentMatchedFunc) error {
 	cAll := 0
 	ct := 0
+	var cachePath []*Rename
 	start := time.Now()
 	// 有字符串替换操作则先备份原目录 rootDir
 	if sr.Content != nil && sr.Content.Replace != "" {
@@ -36,9 +40,10 @@ func (sr *Rule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFu
 	}
 	//tf := s.Conf.SearchFile
 	err := filepath.Walk(rootDir, func(path string, info os.FileInfo, err error) error {
-		// s1.路径规则
+		// s1.通用文件夹处理
 		cAll++
 		if err != nil {
+			fmt.Println(err.Error())
 			return err
 		}
 		if pathFunc != nil {
@@ -47,6 +52,15 @@ func (sr *Rule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFu
 			}
 		}
 		if info.IsDir() {
+			// 文件夹重命名
+			if sr.Dir != nil {
+				for _, rename := range sr.Dir.Rename {
+					if info.Name() == rename.Source {
+						newName := filepath.Join(filepath.Dir(path), rename.Target)
+						cachePath = append(cachePath, &Rename{path, newName})
+					}
+				}
+			}
 			return nil
 		}
 		// 排除含有指定路径的文件
@@ -102,6 +116,19 @@ func (sr *Rule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFu
 	if err != nil {
 		fmt.Println(err)
 	}
+	rename(cachePath)
 	fmt.Printf("Search totalFile:%v targetFile:%v cost:%v \n", cAll, ct, time.Now().Sub(start))
 	return nil
+}
+
+func rename(paths []*Rename) {
+	for i := 0; i < len(paths); i++ {
+		t := paths[len(paths)-1-i]
+		err := os.Rename(t.Source, t.Target)
+		if err != nil {
+			fmt.Printf("Rename [%v] -> [%v] dir error: %v\n", t.Source, t.Target, err.Error())
+			continue
+		}
+		fmt.Printf("Rename [%s -> %s]\n", t.Source, t.Target)
+	}
 }

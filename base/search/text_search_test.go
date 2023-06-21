@@ -18,3 +18,7 @@ func TestExtContentFunc(t *testing.T) {
 		fmt.Println(f.FuncName, f.Include)
 	}, nil)
 }
+
+func TestRename(t *testing.T) {
+	NewSearch("_test_rename_conf.json").Start()
+}
