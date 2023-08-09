@@ -1,6 +1,5 @@
 // Author: yangzq80@gmail.com
 // Date: 2021-03-16
-//
 package server
 
 import (
@@ -42,7 +41,9 @@ func (s *Server) startApiServer() {
 
 	s.ConfigHandles(engine)
 
-	rest.NewJsonStoreRest(s.cf.Path, engine)
+	rs := rest.NewJsonStoreRest(s.cf.Path)
+	rs.DisableCors = true
+	rs.ConfigHandles(engine)
 
 	ConfigUserHandles(engine)
 
