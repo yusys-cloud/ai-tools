@@ -9,7 +9,7 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
-	github.com/yusys-cloud/go-jsonstore-rest v0.0.0-20230721083946-32fea893dabc
+	github.com/yusys-cloud/go-jsonstore-rest v0.0.0-20230727101051-c762a0e8e874
 	golang.org/x/crypto v0.7.0
 )
 

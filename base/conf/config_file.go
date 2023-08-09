@@ -19,7 +19,7 @@ import (
 // 从json文件中加载配置到struct中，如 :
 // search := &Search{} ;
 // conf.LoadJsonConfigFile("conf.json", search)
-func LoadJsonConfigFile(jsonFilename string, confStruct interface{}) {
+func LoadJsonConfigFile(jsonFilename string, confStruct *interface{}) {
 	data, err := os.ReadFile(jsonFilename)
 
 	if err != nil {

@@ -1,12 +1,11 @@
 // Author: yangzq80@gmail.com
 // Date: 2021-03-25
-//
 package conf
 
 import (
 	"encoding/json"
-	"io/ioutil"
 	"log"
+	"os"
 )
 
 type Conf struct {
@@ -18,7 +17,7 @@ type Conf struct {
 func ReadConfig() *Conf {
 	file := "config.json"
 
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 
 	if err != nil {
 		log.Fatalf("read config file <%s> failure. err:%+v", file, err)

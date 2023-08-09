@@ -23,7 +23,9 @@ var apisCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		r := gin.Default()
 		//REST-APIs-json
-		rest.NewJsonStoreRest(dataPath, r)
+		s := rest.NewJsonStoreRest(dataPath)
+		s.ConfigHandles(r)
+		s.DisableCors = true
 		r.Run(":" + port)
 	},
 }
