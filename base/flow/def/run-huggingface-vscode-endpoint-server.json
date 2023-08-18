@@ -1,0 +1,8 @@
+{
+  "name": "启动StarCoder vscode endpoint服务",
+  "cmds": [
+    "git clone git clone https://github.com/LucienShui/huggingface-vscode-endpoint-server.git && cd huggingface-vscode-endpoint-server",
+    "pip install -r requirements.txt",
+    "python main.py --pretrained=/home/ubuntu/yzq/models/starcoder"
+  ]
+}

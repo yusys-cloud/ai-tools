@@ -32,6 +32,16 @@ func ExtractMultipleString(str string, regexpStr string) []string {
 	return re.FindStringSubmatch(str)
 }
 
+func ExtractAllString(str string, regexpStr string) []string {
+	re := regexp.MustCompile(regexpStr)
+	rs := re.FindAllStringSubmatch(str, -1)
+	strs := make([]string, len(rs))
+	for i, r := range rs {
+		strs[i] = r[1]
+	}
+	return strs
+}
+
 // 通过正则统计出现次数
 func CountMatches(str string, regexpStr string) int {
 	regex := regexp.MustCompile(regexpStr)

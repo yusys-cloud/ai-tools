@@ -4,7 +4,7 @@ package logs
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/yusys-cloud/ai-tools/base/time"
+	"github.com/yusys-cloud/ai-tools/pkg/utils/time"
 	"io"
 	"os"
 )

@@ -2,7 +2,9 @@
 可视化操作日常工作场景，自动执行重复工作流程
 [ui](https://github.com/yusys-cloud/ai-tools-ui)
 ## Features
-* [任务失败自动重试](base/flow)
+* [自动流程步骤](base/flow)
+  * 命令行执行失败自动重试
+  * 文本解析到HTTP接口
 * 低代码SSH工具
     * 可视化自动输入Linux命令
     * 可视化拖拽流程策略

@@ -1,0 +1,5 @@
+{
+  "name": "安装clash",
+  "cmds":["curl -LO https://github.com/Dreamacro/clash/releases/download/v1.17.0/clash-linux-amd64-v1.17.0.gz | gzip -d > /usr/local/bin/clash",
+  "chmod +x /usr/local/bin/clash"]
+}

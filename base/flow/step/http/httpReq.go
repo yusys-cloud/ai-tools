@@ -1,0 +1,72 @@
+// Author: yangzq80@gmail.com
+// Date: 2023/8/17
+// RESTfull-APIs通用HTTP/JSON请求操作
+package http
+
+import (
+	"encoding/json"
+	log "github.com/sirupsen/logrus"
+	"io"
+	"net/http"
+	"strings"
+)
+
+type Http struct {
+	Url     string
+	Method  string //GET,POST,PUT,DELETE
+	Header  map[string]string
+	Payload string
+}
+
+func Get(url string, header map[string]string) map[string]interface{} {
+	return DoRequest(http.MethodGet, url, "", header)
+}
+func Post(url string, body string, header map[string]string) map[string]interface{} {
+	return DoRequest(http.MethodPost, url, body, header)
+}
+func Put(url string, body string, header map[string]string) map[string]interface{} {
+	return DoRequest(http.MethodPut, url, body, header)
+}
+func Delete(url string, header map[string]string) map[string]interface{} {
+	return DoRequest(http.MethodDelete, url, "", header)
+}
+
+func DoRequest(method string, url string, body string, header map[string]string) map[string]interface{} {
+	http := &Http{
+		Url:     url,
+		Method:  method,
+		Header:  header,
+		Payload: body,
+	}
+	return http.Do()
+}
+
+func (h *Http) Do() map[string]interface{} {
+	client := &http.Client{}
+
+	var payLoad io.Reader
+	if h.Payload != "" {
+		payLoad = strings.NewReader(h.Payload)
+	}
+
+	req, err := http.NewRequest(h.Method, h.Url, payLoad)
+
+	req.Header.Set("Content-Type", "application/json")
+	for k, v := range h.Header {
+		req.Header.Set(k, v)
+	}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Errorf("ExecReq-request-error:%v", err.Error())
+		return nil
+	}
+	var respJ map[string]interface{}
+	body, _ := io.ReadAll(resp.Body)
+	err = json.Unmarshal(body, &respJ)
+	if err != nil {
+		log.Errorf("ExecReq-json-Unmarshal-error:%v", err)
+		return nil
+	}
+	return respJ
+}

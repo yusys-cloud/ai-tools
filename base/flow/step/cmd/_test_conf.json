@@ -1,0 +1,17 @@
+{
+  "name": "run localGPT",
+  "steps": [
+    {
+      "cmd": {
+        "cmd": "cd /Users/zqy/test/tmp && pwd && ls&&python3 -V",
+        "retry": {
+          "condition": [
+            "requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))",
+            "Python 31.9.12"
+          ],
+          "times": 10000
+        }
+      }
+    }
+  ]
+}
