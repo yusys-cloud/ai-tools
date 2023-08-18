@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-// 自定义规则判断文件是否满足搜索条件，false则不满足，默认true
+// 自定义func判断文件是否满足搜索条件，false不满足，默认true;也可仅用作文件自定义处理,返回false不用文本搜索
 type PathFunc func(path string) bool
 
 // 自定义匹配到的内容处理
@@ -29,6 +29,8 @@ func (sf *Rule) WalkContent(rootDir string) error {
 	return sf.WalkContentWithFunc(rootDir, nil, nil, nil, nil)
 }
 
+// 根据配置的文件筛选Rule,对目标Dir进行文本内容搜索处理
+// PathFunc
 func (sr *Rule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFunc HandleMatchedFunc, extContentFunc ExtContentFunc, extContentMatchedFunc ExtContentMatchedFunc) error {
 	cAll := 0
 	ct := 0
@@ -46,11 +48,11 @@ func (sr *Rule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFu
 			fmt.Println(err.Error())
 			return err
 		}
-		if pathFunc != nil {
-			if !pathFunc(path) {
-				return nil
-			}
-		}
+		//if pathFunc != nil {
+		//	if !pathFunc(path) {
+		//		return nil
+		//	}
+		//}
 		if info.IsDir() {
 			// 文件夹重命名
 			if sr.Dir != nil {
@@ -74,6 +76,13 @@ func (sr *Rule) WalkContentWithFunc(rootDir string, pathFunc PathFunc, matchedFu
 				return nil
 			}
 		}
+		// 自定义func文件判断规则 - 判断是否对内容进行搜索,如果返回false则不进行后面内容搜索处理
+		if pathFunc != nil {
+			if !pathFunc(path) {
+				return nil
+			}
+		}
+
 		// 读取并输出文件内容
 		data, err := os.ReadFile(path)
 		if err != nil {
