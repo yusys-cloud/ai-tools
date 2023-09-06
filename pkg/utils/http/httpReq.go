@@ -4,34 +4,34 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
-	"strings"
 )
 
 type Http struct {
 	Url     string
 	Method  string //GET,POST,PUT,DELETE
 	Header  map[string]string
-	Payload string
+	Payload any
 }
 
 func Get(url string, header map[string]string) map[string]interface{} {
 	return DoRequest(http.MethodGet, url, "", header)
 }
-func Post(url string, body string, header map[string]string) map[string]interface{} {
+func Post(url string, body any, header map[string]string) map[string]interface{} {
 	return DoRequest(http.MethodPost, url, body, header)
 }
-func Put(url string, body string, header map[string]string) map[string]interface{} {
+func Put(url string, body any, header map[string]string) map[string]interface{} {
 	return DoRequest(http.MethodPut, url, body, header)
 }
 func Delete(url string, header map[string]string) map[string]interface{} {
 	return DoRequest(http.MethodDelete, url, "", header)
 }
 
-func DoRequest(method string, url string, body string, header map[string]string) map[string]interface{} {
+func DoRequest(method string, url string, body any, header map[string]string) map[string]interface{} {
 	http := &Http{
 		Url:     url,
 		Method:  method,
@@ -45,8 +45,9 @@ func (h *Http) Do() map[string]interface{} {
 	client := &http.Client{}
 
 	var payLoad io.Reader
-	if h.Payload != "" {
-		payLoad = strings.NewReader(h.Payload)
+	if h.Payload != nil {
+		b, _ := json.Marshal(h.Payload)
+		payLoad = bytes.NewReader(b)
 	}
 
 	req, err := http.NewRequest(h.Method, h.Url, payLoad)
