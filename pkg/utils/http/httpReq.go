@@ -71,21 +71,24 @@ func (h *Http) Do() map[string]interface{} {
 		req.Header.Set(k, v)
 	}
 
+	var respJ map[string]interface{}
 	resp, err := client.Do(req)
+
 	if err != nil {
 		log.Errorf("ExecReq-request-error:%v", err.Error())
-		return nil
+		respJ["error"] = err.Error()
+		return respJ
 	}
-	var respJ map[string]interface{}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Errorf("ExecReq-ReadResp-error:%v", err.Error())
-		return nil
+		respJ["error"] = err.Error()
+		return respJ
 	}
 	err = json.Unmarshal(body, &respJ)
 	if err != nil {
-		log.Errorf("ExecReq-json-Unmarshal-error:%v", err)
-		return nil
+		respJ["body"] = body
+		return respJ
 	}
 	return respJ
 }
