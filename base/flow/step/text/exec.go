@@ -23,6 +23,9 @@ func (s *Step) Exec(log *log.Logger) {
 	vars := step.GetVariable(rawVar.(string))
 
 	utils.ScanTextLine(s.Path, func(line string, i int) bool {
+		if len(strings.TrimSpace(line)) == 0 {
+			return true
+		}
 		parts := strings.Split(line, s.Delimiter)
 
 		s.Http.Payload = rawVar

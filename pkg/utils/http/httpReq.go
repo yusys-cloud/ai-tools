@@ -6,6 +6,7 @@ package http
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
@@ -18,8 +19,12 @@ type Http struct {
 	Payload any
 }
 
+func GetUrl(url string) map[string]interface{} {
+	return DoRequest(http.MethodGet, url, nil, nil)
+}
+
 func Get(url string, header map[string]string) map[string]interface{} {
-	return DoRequest(http.MethodGet, url, "", header)
+	return DoRequest(http.MethodGet, url, nil, header)
 }
 func Post(url string, body any, header map[string]string) map[string]interface{} {
 	return DoRequest(http.MethodPost, url, body, header)
@@ -46,8 +51,17 @@ func (h *Http) Do() map[string]interface{} {
 
 	var payLoad io.Reader
 	if h.Payload != nil {
-		b, _ := json.Marshal(h.Payload)
-		payLoad = bytes.NewReader(b)
+		// 字符串
+		if str, ok := h.Payload.(string); ok && len(h.Payload.(string)) > 0 {
+			payLoad = bytes.NewBufferString(str)
+		} else {
+			// json encoding
+			b, err := json.Marshal(h.Payload)
+			if err != nil {
+				fmt.Println("json.marshal err:" + err.Error())
+			}
+			payLoad = bytes.NewReader(b)
+		}
 	}
 
 	req, err := http.NewRequest(h.Method, h.Url, payLoad)
@@ -63,7 +77,11 @@ func (h *Http) Do() map[string]interface{} {
 		return nil
 	}
 	var respJ map[string]interface{}
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Errorf("ExecReq-ReadResp-error:%v", err.Error())
+		return nil
+	}
 	err = json.Unmarshal(body, &respJ)
 	if err != nil {
 		log.Errorf("ExecReq-json-Unmarshal-error:%v", err)
