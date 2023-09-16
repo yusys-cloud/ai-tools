@@ -71,7 +71,7 @@ func (h *Http) Do() map[string]interface{} {
 		req.Header.Set(k, v)
 	}
 
-	var respJ map[string]interface{}
+	respJ := make(map[string]interface{})
 	resp, err := client.Do(req)
 
 	if err != nil {
@@ -83,6 +83,10 @@ func (h *Http) Do() map[string]interface{} {
 	if err != nil {
 		log.Errorf("ExecReq-ReadResp-error:%v", err.Error())
 		respJ["error"] = err.Error()
+		return respJ
+	}
+	if len(body) == 0 {
+		respJ["StatusCode"] = resp.StatusCode
 		return respJ
 	}
 	err = json.Unmarshal(body, &respJ)
