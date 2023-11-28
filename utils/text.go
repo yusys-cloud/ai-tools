@@ -4,7 +4,6 @@ package utils
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 )
@@ -21,23 +20,35 @@ func ScanTextLine(filepath string, lineFunc TextLineFunc) error {
 	}
 
 	r := bufio.NewReader(file)
+
 	i := 0
+	longLinePrefix := ""
+	isLongLine := false
+
 	for {
 		// 读取一行数据
-		line, isPrefix, err := r.ReadLine()
+		lineB, isPrefix, err := r.ReadLine()
+		line := string(lineB)
 
 		if err != nil {
-			//fmt.Println("Error reading file:", err)
-			break
-		}
-
-		i++
-		if !lineFunc(string(line), i) {
 			break
 		}
 
 		if isPrefix {
-			fmt.Println("Line is too long and continues on the next line.", string(line))
+			longLinePrefix += line
+			isLongLine = true
+			//fmt.Println("Line is too long and continues on the next line.", string(line))
+		} else {
+			if isLongLine {
+				line = longLinePrefix + line
+				// 还原长行临时变量
+				isLongLine = false
+				longLinePrefix = ""
+			}
+			i++
+			if !lineFunc(line, i) {
+				break
+			}
 		}
 	}
 
