@@ -1,6 +1,6 @@
 // Author: yangzq80@gmail.com
 // Date: 2023/8/17
-package text
+package utils
 
 import (
 	"fmt"
@@ -11,7 +11,7 @@ type Method struct {
 	Declaration string
 }
 
-func TestName(t *testing.T) {
+func TestScanTextLine(t *testing.T) {
 	filepath := "/Users/zqy/test/tmp/test.ts"
 
 	var history []string
@@ -19,7 +19,7 @@ func TestName(t *testing.T) {
 	ScanTextLine(filepath, func(line string, i int) bool {
 
 		history = append(history, line)
-		fmt.Println(history)
+		fmt.Println(i, line)
 		return true
 	})
 }

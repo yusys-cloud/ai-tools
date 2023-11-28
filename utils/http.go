@@ -1,7 +1,7 @@
 // Author: yangzq80@gmail.com
-// Date: 2023/8/17
+// Date: 2021/8/17
 // RESTfull-APIs通用HTTP/JSON请求操作
-package http
+package utils
 
 import (
 	"bytes"
@@ -77,12 +77,14 @@ func (h *Http) Do() map[string]interface{} {
 	if err != nil {
 		log.Errorf("ExecReq-request-error:%v", err.Error())
 		respJ["error"] = err.Error()
+		respJ["StatusCode"] = resp.StatusCode
 		return respJ
 	}
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		log.Errorf("ExecReq-ReadResp-error:%v", err.Error())
 		respJ["error"] = err.Error()
+		respJ["StatusCode"] = resp.StatusCode
 		return respJ
 	}
 	if len(body) == 0 {
@@ -91,7 +93,7 @@ func (h *Http) Do() map[string]interface{} {
 	}
 	err = json.Unmarshal(body, &respJ)
 	if err != nil {
-		respJ["body"] = body
+		respJ["body"] = string(body)
 		return respJ
 	}
 	return respJ

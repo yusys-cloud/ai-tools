@@ -6,7 +6,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/yusys-cloud/ai-tools/base/flow/step/cmd"
 	"github.com/yusys-cloud/ai-tools/base/search"
-	"github.com/yusys-cloud/ai-tools/pkg/utils/http"
+	"github.com/yusys-cloud/ai-tools/utils"
 	"strings"
 )
 
@@ -18,7 +18,7 @@ type Step struct {
 
 func (h *Step) Exec(log *log.Logger) map[string]interface{} {
 
-	respJ := http.Get(h.Url, h.Header)
+	respJ := utils.Get(h.Url, h.Header)
 
 	// 变量解析赋值处理
 	if h.Resp.Cmd != nil {

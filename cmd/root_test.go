@@ -7,6 +7,11 @@ import (
 	"testing"
 )
 
+func TestH(t *testing.T) {
+	os.Args = []string{"main", "-h"}
+	Execute()
+}
+
 func TestJsonAPI(t *testing.T) {
 	os.Args = []string{"main", "jsonapi"}
 	Execute()
@@ -14,5 +19,14 @@ func TestJsonAPI(t *testing.T) {
 
 func TestWebSSH(t *testing.T) {
 	os.Args = []string{"main", "webSSH"}
+	Execute()
+}
+
+func TestOPSHelp(t *testing.T) {
+	os.Args = []string{"main", "ops", "-h"}
+	Execute()
+}
+func TestOPS(t *testing.T) {
+	os.Args = []string{"main", "ops", "-k", "java"}
 	Execute()
 }

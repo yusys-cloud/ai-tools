@@ -1,6 +1,6 @@
 // Author: yangzq80@gmail.com
 // Date: 2023/4/27
-package time
+package utils
 
 import "time"
 

@@ -4,17 +4,20 @@ package logs
 
 import (
 	log "github.com/sirupsen/logrus"
-	"github.com/yusys-cloud/ai-tools/pkg/utils/time"
+	"github.com/yusys-cloud/ai-tools/utils"
 	"io"
 	"os"
 )
 
 func NewLogger(debug bool) *log.Logger {
 	logger := log.New()
-	logger.SetFormatter(&log.JSONFormatter{TimestampFormat: time.DateTimeFormat})
+	logger.SetFormatter(&log.JSONFormatter{TimestampFormat: utils.DateTimeFormat})
 	if debug {
 		logger.SetLevel(log.DebugLevel)
 	}
+	logger.SetFormatter(&log.TextFormatter{
+		TimestampFormat: utils.DateTimeFormat,
+	})
 	return logger
 }
 func NewLoggerOutputFile(debug bool, name string) *log.Logger {
